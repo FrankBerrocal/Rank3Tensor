@@ -353,7 +353,7 @@ export default function App() {
         
         {/* Visualization Panel */}
         <section className="lg:col-span-12 flex flex-col gap-6">
-          <div className="h-[500px] rounded-3xl border border-slate-100 bg-slate-50/30 overflow-hidden relative shadow-inner">
+          <div className="h-[600px] rounded-3xl border border-slate-100 bg-slate-50/30 overflow-hidden relative shadow-inner">
             <Canvas shadows gl={{ antialias: true }}>
               <color attach="background" args={['#ffffff']} />
               <PerspectiveCamera makeDefault position={[15, 12, 15]} fov={40} />
