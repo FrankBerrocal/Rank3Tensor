@@ -108,7 +108,7 @@ const SpherePoint = ({ point, scalarLimit }: { point: TensorPoint, scalarLimit: 
           outlineWidth={0.02}
           outlineColor="white"
         >
-          {`(${point.i}, ${point.j}, ${point.k})`}
+          {`CH:${point.k} | X:${point.i} | Y:${point.j}`}
         </Text>
       </Billboard>
     </group>
@@ -385,13 +385,13 @@ export default function App() {
 
                 {/* Legend Labels Facing the User */}
                 <Billboard position={[6, -5, 0]}>
-                  <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Side: X (J)</Text>
+                  <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Side (Y): J</Text>
                 </Billboard>
                 <Billboard position={[0, 6, 0]}>
-                  <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Top: Y (I)</Text>
+                  <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Vertical (X): I</Text>
                 </Billboard>
                 <Billboard position={[0, -5, 6]}>
-                  <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Depth: Z (K)</Text>
+                  <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Depth (Z): K</Text>
                 </Billboard>
               </group>
 
@@ -428,14 +428,20 @@ export default function App() {
                   className="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col gap-4"
                 >
                   <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1.5 opacity-60">
+                      <label className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Channel (K)</label>
+                      <div className="w-full bg-slate-100 border border-slate-200 rounded-lg px-2 py-2 text-xs font-mono text-center">
+                        {k}
+                      </div>
+                    </div>
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Input I</label>
+                      <label className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Vertical (X): I</label>
                       <input 
                         autoFocus
                         type="number"
                         value={inputI}
                         onChange={(e) => setInputI(e.target.value)}
-                        placeholder="Y pos"
+                        placeholder="X value"
                         className={`w-full bg-white border rounded-lg px-2 py-2 text-xs font-mono outline-none focus:ring-1 ${parseInt(inputI) > scalarLimit ? 'border-red-500 bg-red-50 text-red-600 focus:ring-red-300' : 'border-slate-200 focus:ring-slate-300'}`}
                       />
                       {parseInt(inputI) > scalarLimit && (
@@ -443,26 +449,17 @@ export default function App() {
                       )}
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Input J</label>
+                      <label className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">Side (Y): J</label>
                       <input 
                         type="number"
                         value={inputJ}
                         onChange={(e) => setInputJ(e.target.value)}
-                        placeholder="X pos"
+                        placeholder="Y value"
                         className={`w-full bg-white border rounded-lg px-2 py-2 text-xs font-mono outline-none focus:ring-1 ${parseInt(inputJ) > scalarLimit ? 'border-red-500 bg-red-50 text-red-600 focus:ring-red-300' : 'border-slate-200 focus:ring-slate-300'}`}
                       />
                       {parseInt(inputJ) > scalarLimit && (
                         <p className="text-[8px] text-red-500 font-bold uppercase">Exceeds {scalarLimit}</p>
                       )}
-                    </div>
-                    <div className="space-y-1.5 opacity-40">
-                      <label className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Index K</label>
-                      <input 
-                        disabled
-                        type="number"
-                        value={k}
-                        className="w-full bg-slate-200 border border-transparent rounded-lg px-2 py-2 text-xs font-mono outline-none cursor-not-allowed text-center"
-                      />
                     </div>
                   </div>
                   <div className="flex gap-2">
