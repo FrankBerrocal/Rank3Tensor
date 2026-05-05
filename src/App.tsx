@@ -14,9 +14,9 @@ import * as THREE from 'three';
 
 interface TensorPoint {
   id: string;
-  i: number; // Y coordinate
-  j: number; // X coordinate
-  k: number; // Z coordinate (0: Red, 1: Blue, 2: Green)
+  i: number; // X coordinate (Vertical)
+  j: number; // Y coordinate (Side)
+  k: number; // Z coordinate (Depth - 0: Red, 1: Green, 2: Blue)
   color: string;
 }
 
@@ -76,9 +76,9 @@ const SpherePoint = ({ point, scalarLimit }: { point: TensorPoint, scalarLimit: 
   
   // Scale units to fit in a 10x10x10 cube
   const scaleFactor = 10 / scalarLimit;
-  const x = point.j * scaleFactor - 5; // J as X (Side)
-  const y = point.i * scaleFactor - 5; // I as Y (Top)
-  const z = (point.k - 1) * 3; // K as Z (Depth), spread out for visibility (Z= -3, 0, 3)
+  const x = point.j * scaleFactor - 5; // J as Y (Side)
+  const y = point.i * scaleFactor - 5; // I as X (Vertical)
+  const z = (point.k - 1) * 3; // K as Z (Depth)
   
   useFrame((state) => {
     if (meshRef.current) {
@@ -108,7 +108,7 @@ const SpherePoint = ({ point, scalarLimit }: { point: TensorPoint, scalarLimit: 
           outlineWidth={0.02}
           outlineColor="white"
         >
-          {`CH:${point.k} | X:${point.i} | Y:${point.j}`}
+          {`X:${point.i} | Y:${point.j} | Z:${point.k}`}
         </Text>
       </Billboard>
     </group>
@@ -290,7 +290,7 @@ export default function App() {
             <Box className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-slate-900">Rank 3 Tensor Visualization</h1>
+            <h1 className="text-lg font-bold tracking-tight text-slate-900">Rank 3 Tensor</h1>
             <p className="text-xs text-slate-500 font-medium">by Frank Berrocal</p>
           </div>
         </div>
@@ -383,14 +383,14 @@ export default function App() {
                   sectionThickness={1.5}
                 />
 
-                {/* Legend Labels Facing the User */}
-                <Billboard position={[6, -5, 0]}>
+                {/* Legend Labels Next to Axis Lines */}
+                <Billboard position={[0, -5.8, -5.5]}>
                   <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Side (Y): J</Text>
                 </Billboard>
-                <Billboard position={[0, 6, 0]}>
+                <Billboard position={[-5.8, 0, -5.5]}>
                   <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Vertical (X): I</Text>
                 </Billboard>
-                <Billboard position={[0, -5, 6]}>
+                <Billboard position={[-5.8, -5.8, 0]}>
                   <Text fontSize={0.4} color="#64748b" outlineWidth={0.05} outlineColor="white">Depth (Z): K</Text>
                 </Billboard>
               </group>
@@ -486,7 +486,7 @@ export default function App() {
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full border border-slate-100" style={{ backgroundColor: p.color }} />
                       <span className="text-[11px] font-mono text-slate-600">
-                        I:{p.i} J:{p.j} <span className="text-slate-300 mx-1">|</span> K:{p.k}
+                        X:{p.i} Y:{p.j} <span className="text-slate-300 mx-1">|</span> Z:{p.k}
                       </span>
                     </div>
                     <button 
