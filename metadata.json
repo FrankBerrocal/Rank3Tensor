@@ -1,0 +1,6 @@
+{
+  "name": "Rank 3 Tensor Visualization",
+  "description": "Visualizing data across R, G, B channels as a Rank 3 Tensor with dynamic 3D mapping.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
