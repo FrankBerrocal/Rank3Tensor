@@ -7,7 +7,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Grid, Text, Float, PerspectiveCamera, Environment, Stars, Billboard } from '@react-three/drei';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Trash2, Box, Info, Layers, Maximize2, Settings2, Database, Upload } from 'lucide-react';
+import { Plus, Trash2, Box, Info, Layers, Maximize2, Settings2, Database, Upload, Download } from 'lucide-react';
 import * as THREE from 'three';
 
 // --- Types ---
@@ -22,26 +22,26 @@ interface TensorPoint {
 
 enum ColumnType {
   RED = 0,
-  BLUE = 1,
-  GREEN = 2
+  GREEN = 1,
+  BLUE = 2
 }
 
 const COLUMN_NAMES = {
   [ColumnType.RED]: 'Red',
-  [ColumnType.BLUE]: 'Blue',
-  [ColumnType.GREEN]: 'Green'
+  [ColumnType.GREEN]: 'Green',
+  [ColumnType.BLUE]: 'Blue'
 };
 
 const COLUMN_COLORS = {
   [ColumnType.RED]: 'text-red-500',
-  [ColumnType.BLUE]: 'text-blue-500',
-  [ColumnType.GREEN]: 'text-emerald-500'
+  [ColumnType.GREEN]: 'text-emerald-500',
+  [ColumnType.BLUE]: 'text-blue-500'
 };
 
 const COLUMN_BG_GLOW = {
   [ColumnType.RED]: 'bg-red-500/10',
-  [ColumnType.BLUE]: 'bg-blue-500/10',
-  [ColumnType.GREEN]: 'bg-emerald-500/10'
+  [ColumnType.GREEN]: 'bg-emerald-500/10',
+  [ColumnType.BLUE]: 'bg-blue-500/10'
 };
 
 // --- Utils ---
@@ -50,25 +50,20 @@ const calculateColor = (i: number, j: number, k: number, limit: number): string 
   const normI = Math.min(255, Math.max(0, (i / limit) * 255));
   const normJ = Math.min(255, Math.max(0, (j / limit) * 255));
   
-  // Mapping logic:
-  // K=0 (Red): Primarily red, influenced by I (Green) and J (Blue)
-  // K=1 (Blue): Primarily blue, influenced by I (Red) and J (Green)
-  // K=2 (Green): Primarily green, influenced by I (Red) and J (Blue)
-  
   let r = 0, g = 0, b = 0;
   
-  if (k === 0) { // Red Column
+  if (k === ColumnType.RED) { // Red Column
     r = 255;
     g = normI;
     b = normJ;
-  } else if (k === 1) { // Blue Column
-    r = normI;
-    g = normJ;
-    b = 255;
-  } else if (k === 2) { // Green Column
+  } else if (k === ColumnType.GREEN) { // Green Column
     r = normI;
     g = 255;
     b = normJ;
+  } else if (k === ColumnType.BLUE) { // Blue Column
+    r = normI;
+    g = normJ;
+    b = 255;
   }
   
   return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
@@ -193,6 +188,32 @@ export default function App() {
     );
   };
 
+  const handleDownloadTestData = () => {
+    const header = "K, I, J";
+    const rows = [];
+    
+    for (let k = 0; k <= 2; k++) {
+      for (let n = 0; n < 256; n++) {
+        const iValue = Math.floor(Math.random() * (scalarLimit + 1));
+        const jValue = Math.floor(Math.random() * (scalarLimit + 1));
+        rows.push(`${k}, ${iValue}, ${jValue}`);
+      }
+    }
+    
+    const csvContent = [header, ...rows].join("\n");
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.style.display = 'none';
+    link.href = url;
+    link.download = "test_tensor_data.csv";
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  };
+
   const handleCsvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -304,6 +325,14 @@ export default function App() {
             </div>
           </div>
 
+          <button 
+            onClick={handleDownloadTestData}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-slate-200 hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <Download className="w-4 h-4" />
+            Test Data Download
+          </button>
+
           <div className="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scalar Restriction</label>
              <input 
@@ -372,11 +401,11 @@ export default function App() {
 
         {/* Data Entry Grid */}
         <section className="lg:col-span-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[ColumnType.RED, ColumnType.BLUE, ColumnType.GREEN].map((k) => (
+          {[ColumnType.RED, ColumnType.GREEN, ColumnType.BLUE].map((k) => (
             <div key={k} className="flex flex-col gap-4">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${k === 0 ? 'bg-red-500' : k === 1 ? 'bg-blue-500' : 'bg-emerald-500'}`} />
+                  <div className={`w-2 h-2 rounded-full ${k === ColumnType.RED ? 'bg-red-500' : k === ColumnType.GREEN ? 'bg-emerald-500' : 'bg-blue-500'}`} />
                   <h3 className="font-bold text-slate-800">{COLUMN_NAMES[k as ColumnType]} Column</h3>
                 </div>
                 <button 
