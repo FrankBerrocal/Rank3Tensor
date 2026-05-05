@@ -188,30 +188,24 @@ export default function App() {
     );
   };
 
-  const handleDownloadTestData = () => {
-    const header = "K, I, J";
-    const rows = [];
+  const handleLoadRandomData = () => {
+    const newPoints: TensorPoint[] = [];
     
     for (let k = 0; k <= 2; k++) {
       for (let n = 0; n < 256; n++) {
         const iValue = Math.floor(Math.random() * (scalarLimit + 1));
         const jValue = Math.floor(Math.random() * (scalarLimit + 1));
-        rows.push(`${k}, ${iValue}, ${jValue}`);
+        newPoints.push({
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${k}-${n}`,
+          i: iValue,
+          j: jValue,
+          k: k,
+          color: calculateColor(iValue, jValue, k, scalarLimit)
+        });
       }
     }
     
-    const csvContent = [header, ...rows].join("\n");
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.style.display = 'none';
-    link.href = url;
-    link.download = "test_tensor_data.csv";
-    document.body.appendChild(link);
-    link.click();
-    URL.revokeObjectURL(url);
-    document.body.removeChild(link);
+    setPoints(prev => [...prev, ...newPoints]);
   };
 
   const handleCsvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -325,13 +319,22 @@ export default function App() {
             </div>
           </div>
 
-          <button 
-            onClick={handleDownloadTestData}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-slate-200 hover:-translate-y-0.5 active:translate-y-0"
-          >
-            <Download className="w-4 h-4" />
-            Test Data Download
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleLoadRandomData}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-slate-200 hover:-translate-y-0.5 active:translate-y-0"
+            >
+              <Database className="w-4 h-4" />
+              Load Data
+            </button>
+            <button 
+              onClick={() => setPoints([])}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-red-50 hover:border-red-200 hover:text-red-600 rounded-xl text-xs font-bold transition-all text-slate-600"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear Data
+            </button>
+          </div>
 
           <div className="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scalar Restriction</label>
